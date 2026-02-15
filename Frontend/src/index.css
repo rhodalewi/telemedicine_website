@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+/* @custom-variant dark (&:is(.dark *)); */
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+/* Poppins */
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets//Fonts//Poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/Fonts/Poppins/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/Fonts/Poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('./assets/Fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Open Sans */
+@font-face {
+  font-family: 'Open Sans';
+  src: url('./assets/Fonts/OpenSans/OpenSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('./assets/Fonts/OpenSans/OpenSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('./assets/Fonts/OpenSans/OpenSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('./assets/Fonts/OpenSans/OpenSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+@theme {
+  /* Primary Brand Colors */
+  --color-primary: #1AA380;     /* Healthcare Teal */
+  --color-primary-hover:  #20C997;
+  --color-accent:  #1E88E5;      /* Blue Accent */
+  --color-accent-hover: #1976D2;
+
+  /* Dark Mode */
+  --color-dark-primary:  #14B8A6 ;
+  --color-dark-primary-hover: #2DD4BF;
+  --color-dark-secondary: #60A5FA;   /* Blue */
+  --color-dark-secondary-hover: #3B82F6;
+
+  /* Neutral Colors */
+  --color-white: #FFFFFF;
+  --color-background: #F9FAFB;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+
+   /*Dark Text */
+  --color-text-dark-primary: #E5E7EB;
+  --color-text-dark-secondary: #9CA3AF;
+  --color-text-dark-muted: #6B7280;
+
+   /*Dark Backgrounds */
+  --color-dark-background: #0F172A;
+  --color-dark-surface: #111827;
+  --color-dark-surface-elevated: #1F2933;
+
+  /* Status Colors */
+  --color-success: #16A34A;
+  --color-warning: #FACC15;
+  --color-error: #DC2626;
+
+  /* Dark Mode */
+  --color-dark-success: #22C55E;
+  --color-dark-warning: #EAB308;
+  --color-dark-error: #EF4444;
+
+  /* Shadows & Borders */
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Typography */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+
+  /* Font Sizes */
+  --text-h1: 2rem;    /* 32px */
+  --text-h2: 1.5rem;  /* 24px */
+  --text-h3: 1.25rem; /* 20px */
+  --text-body: 1rem;  /* 16px */
+  --text-small: 0.875rem;  /* 14px */
+  --text-caption: 0.75rem; /* 12px */
+}

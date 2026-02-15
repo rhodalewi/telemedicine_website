@@ -1,0 +1,7 @@
+node_modules
+.env
+%AppData%
+dist
+build
+logs
+*.log
