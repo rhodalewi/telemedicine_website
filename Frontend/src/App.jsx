@@ -8,7 +8,7 @@ import MyAppointment from "./Components/patient/MyAppointment";
 import FindDoctor from "./Components/patient/FindDoctor";
 import Profile from "./Components/patient/Profile";
 import ForgotPassword from "./Pages/ForgotPassword";
-import HospitalLocation from "./Components/patient/hospitalLocation";
+import HospitalLocation from "./Components/patient/HospitalLocation";
 
 function App() {
   return (
