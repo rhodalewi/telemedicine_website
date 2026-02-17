@@ -75,9 +75,8 @@ const LandingPage = () => {
     }, [isPaused]);
 
     useEffect(() => {
-        window.scrollTo({ top: 0.5, behavior: 'smooth' })
-        
-        
+        window.scrollTo({ top: 0.1, behavior: 'smooth' })
+          
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])

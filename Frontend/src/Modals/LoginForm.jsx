@@ -99,7 +99,7 @@ const LoginForm = ({ setFormType, setOpenAuth }) => {
                   message: 'Invalid email address'
                 }
               })}
-              className={`w-full px-2.5 py-1.5 rounded-lg border focus:outline-none focus:ring-1  placeholder:text-small ${errors.email ? 'border-error focus:ring-error hover:border-error' : 'b400order-gray- hover:border-primary-hover focus:ring-accent-hover'}`}
+              className={`w-full px-2.5 py-1.5 rounded-lg border focus:outline-none focus:ring-1  placeholder:text-small ${errors.email ? 'border-error focus:ring-error hover:border-error' : 'border-gray-400 hover:border-primary-hover focus:ring-accent-hover'}`}
             />
             {errors.email && <p className="text-error text-caption"> {errors.email.message} </p>}
           </div>
