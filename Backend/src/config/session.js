@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //CONFIGURE SESSION STORE
-const sessionStore = new MySQLStore({}, db);
+const sessionStore = new MySQLStore({}, db.promise());
 
 //SESSION MIDDLEWARE
 const sessionMiddleware = session({
@@ -17,9 +17,9 @@ const sessionMiddleware = session({
     store: sessionStore,
     cookie: {
         maxAge: 240 * 60 * 1000, //4hours
-        secure: true, 
+        secure: process.env.MODE_ENV === 'production', 
         httpOnly: true,
-        sameSite: 'none'
+        sameSite: process.env.MODE_ENV === 'production' ? 'none' : 'lax'
     }
 });
 
