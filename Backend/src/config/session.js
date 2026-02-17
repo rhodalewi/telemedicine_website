@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //CONFIGURE SESSION STORE
-const sessionStore = new MySQLStore({}, db.promise());
+const sessionStore = new MySQLStore({}, db);
 
 //SESSION MIDDLEWARE
 const sessionMiddleware = session({
