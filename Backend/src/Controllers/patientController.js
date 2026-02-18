@@ -74,7 +74,6 @@ exports.loginPatient = async (req, res) => {
                 first_name: patient[0].first_name,
                 last_name: patient[0].last_name,
                 email: patient[0].email,
-
             }
         });
     } catch (error) {

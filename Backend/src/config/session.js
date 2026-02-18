@@ -15,11 +15,12 @@ const sessionMiddleware = session({
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
+    proxy: true,
     cookie: {
-        maxAge: 240 * 60 * 1000, //4hours
-        secure: process.env.MODE_ENV === 'production', 
+        maxAge: 1000 * 60 * 60 * 24, //1 day
+        secure: process.env.NODE_ENV === 'production', 
         httpOnly: true,
-        sameSite: process.env.MODE_ENV === 'production' ? 'none' : 'lax'
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     }
 });
 
