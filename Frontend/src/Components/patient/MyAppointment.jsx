@@ -71,7 +71,7 @@ const MyAppointment = () => {
                                 <div>
                                     <div className='flex justify-between gap-4'>
                                         <p className='font-heading text-small md:text-body'>Dr. {appointments.first_name} {appointments.last_name}</p>
-                                        <p className={`capitalize text-caption md:text-small text-white px-2.5 md:px-4 py-1 rounded-full ${appointments.status === 'upcoming' || appointments.status === 'rescheduled' ? 'bg-success/90' : 'bg-text-secondary/80'}`}> {appointments.status} </p>
+                                        <p className={`capitalize text-caption md:text-small text-white px-2.5 md:px-4 py-1 rounded-full ${appointments.status === 'upcoming' || appointments.status === 'rescheduled' || appointments.status === 'completed' ? 'bg-success/90' : 'bg-error/90'}  `}> {appointments.status} </p>
                                     </div>
                                     <p className='text-small text-text-secondary'> {appointments.specialization} </p>
 

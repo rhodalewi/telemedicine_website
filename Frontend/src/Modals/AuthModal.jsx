@@ -7,8 +7,8 @@ const AuthModal = ({ openAuth, setOpenAuth, formType, setFormType }) => {
   if (!openAuth) return null;
   
   return (
-    <div className="h-full md:h-screen w-full flex justify-center items-center fixed z-30 top-0 bg-text-primary/70 px-6">
-      <div className="max-w-4xl px-6 md:px-0"> 
+    <div className="h-full md:h-screen w-full flex justify-center items-center fixed z-30 top-0 bg-text-primary/70 px-3">
+      <div className="max-w-4xl w-full"> 
         <button
           className="text-white hidden md:block md:float-right text-h2 md:text-h1 ml-2 cursor-pointer hover:text-primary-hover hover:scale-90 transition duration-700 ease-in-out" onClick={() => setOpenAuth(false)}
         >

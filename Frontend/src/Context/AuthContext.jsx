@@ -56,11 +56,11 @@ export const AuthMessageProvider = ({ children }) => {
   
 
     const showSuccess = (msg) => {
-        toast.success(msg, { duration: 2000, position: 'top-center' });
+        toast.success(msg, { duration: 2000, position: 'top-center', className: 'text-caption md:text-body'  });
     };
 
     const showError = (msg) => {
-        toast.error(msg, { duration: 2000, position: 'top-center' });
+        toast.error(msg, { duration: 2000, position: 'top-center', className: 'text-caption md:text-body' });
     };
 
       //DASHBOARD OVERVIEW ENDPOINT

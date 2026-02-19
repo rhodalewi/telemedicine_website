@@ -7,7 +7,7 @@ const Settings = () => {
   const { dashboardOverview, showSuccess, showError, navigate,collapse } = useContext(AuthPatientContext);
   const [toggleTheme, setToggleTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
-    return savedTheme ? savedTheme === 'dark' : true;
+    return savedTheme ? savedTheme === 'light' : true;
   });
 
   //CHANGE THEME

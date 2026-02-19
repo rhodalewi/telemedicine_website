@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import api from '../Services/api';
 import { AuthPatientContext } from '../Context/createContext';
 import { LuEye, LuEyeClosed, LuCircleX } from "react-icons/lu";
+import UserRole from '../Components/UserRole';
 
 
 const LoginForm = ({ setFormType, setOpenAuth }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const { userRole,  selectedRole, setSelectedRole, loginEndpoint, showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, showPassword, setShowPassword} = useContext(AuthPatientContext);
+  const {  selectedRole, loginEndpoint, showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, showPassword, setShowPassword} = useContext(AuthPatientContext);
   const navigate = useNavigate();
   
-
   const onSubmit = async (data) => {
     setIsSubmitting(true);
 
@@ -48,27 +48,17 @@ const LoginForm = ({ setFormType, setOpenAuth }) => {
       <button
         className="text-text-primary md:hidden absolute top-4 right-4" onClick={() => setOpenAuth(false)}
       >
-        <LuCircleX className='font-bold text-h1' />
+        <LuCircleX className='font-bold text-h2 text-text-secondary hover:text-accent transition-colors duration-500 ease-in-out' />
       </button>
 
-      <h2 className="text-h3 font-bold text-center font-heading mb-1">Welcome Back! </h2>
-      <p className="text-caption md:text-small text-center mb-5 text-text-secondary">Select your role to log in to your account</p>
+      <h2 className="md:text-h3 font-bold text-center font-heading mb-1">Welcome Back! </h2>
+      <p className="text-caption text-center mb-5 text-text-secondary">Select your role to log in to your account</p>
 
       <form className='px-8 md:px-12 space-y-3' onSubmit={handleSubmit(onSubmit)}>
         {/* User Role */}
-        <div className='flex items-center justify-evenly gap-4 mb-6 w-full'>
-          {userRole.map(role => (
-            <button
-              type="button"
-              key={role.id}
-              role={role.role}
-              onClick={() => setSelectedRole(role.role)}
-              className={`font-heading capitalize border px-3.5 rounded-lg py-1.75 text-caption text-medium border-none  cursor-pointer hover:bg-primary-hover hover:text-white ${selectedRole === role.role ? 'bg-primary text-white' : 'bg-text-secondary/20 '}`}
-            >
-              {role.role}
-            </button>
-          ))}
-        </div>
+        <>
+          <UserRole formType='login' formValidation={register} formError={errors} />
+        </>
 
         <input type="hidden" className='border border-gray-400 disabled:bg-text-secondary/30' disabled value={selectedRole} />
         
@@ -140,7 +130,7 @@ const LoginForm = ({ setFormType, setOpenAuth }) => {
         <p className="text-caption md:text-small text-right mt-4">Don't have an account?
           <a
             onClick={() => setFormType('register')}
-            className="text-accent pl-2 hover:text-accent-hover hover:underline cursor-pointer"
+            className="text-small text-accent pl-2 hover:text-accent-hover hover:underline cursor-pointer"
           >Create one</a>
         </p>
       </form>

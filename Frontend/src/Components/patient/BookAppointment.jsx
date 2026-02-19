@@ -45,7 +45,7 @@ const BookAppointment = () => {
       </div>
 
       <div className='flex justify-center'>
-        <form onSubmit={handleSubmit(onSubmit)} className='bg-white p-10 rounded-xl shadow-sm border border-gray-200 space-y-6 max-w-3xl w-full'>
+        <form onSubmit={handleSubmit(onSubmit)} className='bg-white p-5 md:p-10 rounded-xl shadow-sm border border-gray-200 space-y-6 max-w-3xl w-full'>
           {/* Select Doctor */}
           <div className='space-y-2'>
             <label className='flex items-center gap-2 text-small md:text-body text-text-secondary'>

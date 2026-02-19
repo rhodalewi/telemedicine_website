@@ -36,7 +36,7 @@ const SideBar = () => {
     
   return (
       <>
-          <div className={`fixed inset-0 z-10 bg-text-primary/70 transition-all duration-500 ease-in-out ${collapse ? 'block md:hidden' : 'hidden'}`} />
+          <div className={`fixed bg-text-primary/70 transition-all duration-500 ease-in-out ${collapse ? 'block md:hidden' : 'hidden'}`} />
         <aside
             className={`border-r border-gray-200 h-screen bg-white md:bg-white/50 fixed right-0 left-0 z-10 flex flex-col justify-between transition-all duration-700 ease-in-out md:translate-none  ${collapse ? 'translate-x-0 w-82 md:w-64' : '-translate-x-full md:w-20'}`}>
             <div>

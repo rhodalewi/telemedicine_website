@@ -57,13 +57,13 @@ const NotificationPanel = ({ onClose }) => {
     }, []);
 
   return (
-    <div className='fixed top-0 left-0 w-full h-full z-20 md:h-screen flex justify-center items-center bg-text-primary/70 px-6'>
+    <div className='fixed top-0 left-0 w-full h-full z-20 md:h-screen flex justify-center items-center bg-text-primary/70 p-3'>
        <div className='max-w-2xl w-full flex flex-col gap-2'>
             <span 
                 onClick={() => onClose(false)}
-                className='p-2 bg-text-primary rounded-lg hover:bg-accent hover:text-white transition-colors duration-700 ease-in-out self-end'
+                className='p-1.5 bg-text-primary rounded-lg hover:bg-accent hover:text-white transition-colors duration-700 ease-in-out self-end'
             >
-                <LuX  className='text-h2 text-white ' />
+                <LuX  className='text-h3 text-white ' />
             </span>
             <div className='bg-white p-6 rounded-2xl space-y-6 shadow-soft'>
                 <div className='flex items-center justify-between border-b border-gray-300 pb-3'>

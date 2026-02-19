@@ -165,7 +165,7 @@ const LandingPage = () => {
                 </div>
                 
                   {/* MOBILE SIDEBAR */}
-                <div className={`h-screen w-full absolute top-full lg:hidden transition-colors ${isOpen ? 'bg-text-primary/60 duration-700 ease-in-out' : ''}`}>
+                <div className={`h-screen right-0 absolute top-full lg:hidden transition-colors ${isOpen ? 'bg-text-primary/60 duration-700 ease-in-out' : ''}`}>
                     <div 
                         className={`absolute right-0 w-64 h-screen bg-background p-8 transform transition-all duration-700 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} 
                         onClick={() => setIsOpen(false)}
@@ -187,7 +187,7 @@ const LandingPage = () => {
                                 </Link>
                             ))}
                         </nav>
-
+                            {/* Buttons */}
                         <div className='border-t border-primary/30 mt-8 pt-8 flex flex-col items-center gap-4 font-heading'>
                             <button 
                                 type='button' 
@@ -235,6 +235,7 @@ const LandingPage = () => {
                                 setOpenAuth(true)
                                 setFormType('register')
                             }}
+                            
                             className="text-sm md:text-base font-semibold py-2.5 px-3.5 rounded-xl bg-primary text-white hover:bg-primary-hover hover:shadow-soft transition-all duration-500 ease-in-out flex items-center gap-1 self-start cursor-pointer"
                         >
                             Book Appointment
@@ -259,7 +260,7 @@ const LandingPage = () => {
                     </div>
                 
                     {/* doctor image */}
-                    <div className=" h-[84%] opacity-90 hidden lg:inline-block">
+                    <div className=" h-[84%] opacity-80 hidden lg:inline-block">
                         <img src="/img/hero-doctor.png" alt="Healthcare professionals" className="object-cover w-full h-auto"/>
                     </div>
                 </div>
@@ -295,7 +296,7 @@ const LandingPage = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5 lg:gap-x-6 lg:gap-y-12 place-content-center ">
                     {services.map((service, index) => (
                         <div key={index} className="flex flex-col items-center justify-center gap-6 p-6 text-center bg-background rounded-xl">
-                            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-primary">
+                            <div className="w-12 h-12 flex justify-center items-center rounded-full bg-primary/86">
                                 <span className="text-white text-h2"> {service.icon} </span>
                             </div>
                             <p> {service.title} </p>
@@ -324,7 +325,7 @@ const LandingPage = () => {
                         )
 
                         if (step.type === 'even') return (
-                            <div key={index} className='p-8 bg-primary text-white rounded-3xl flex flex-col items-center'>
+                            <div key={index} className='p-8 bg-primary/90 text-white rounded-3xl flex flex-col items-center'>
                                 <h2 className="bg-white/96 text-text-primary  w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full text-h3 sm:text-h2 font-semibold mb-8 shadow-[4px_4px_12px_0px_rgba(240,248,255,0.32)]"> {step.step} </h2>
                                 <h1 className="font-bold text-body mb-2 font-heading"> {step.title} </h1>
                                 <p className="text-caption"> {step.description} </p>
@@ -388,7 +389,7 @@ const LandingPage = () => {
                         setOpenAuth(true)
                         setFormType('register')
                     }}
-                    className="text-small font-semibold py-2 md:py-3 px-4 md:px-8 rounded-xl bg-white text-primary hover:bg-accent-hover hover:text-white hover:shadow-soft transition-all duration-500 ease-in-out cursor-pointer">
+                    className="text-small font-semibold py-2 md:py-3 px-4 md:px-8 rounded-xl bg-white text-primary hover:bg-accent-hover hover:text-white hover:shadow-soft transition-all duration-700 ease-in-out cursor-pointer">
                     Get Started
                 </button>
             </div>
@@ -404,7 +405,8 @@ const LandingPage = () => {
                 setOpenAuth={setOpenAuth}
                 formType={formType}
                 setFormType={setFormType}
-        />}
+            />
+        }
     </div>
   )
 }
