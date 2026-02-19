@@ -9,7 +9,7 @@ dotenv.config();
 const sessionStore = new MySQLStore({
     clearExpired: true,
     checkExpirationInterval: 15 * 60 * 1000, //15 minutes
-    expiration: 24 * 60 * 60 * 1000
+    expiration: 24 * 60 * 60 * 1000,
 }, db);
 
 //SESSION MIDDLEWARE
@@ -19,9 +19,9 @@ const sessionMiddleware = session({
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
-    /* proxy: true, */
+    proxy: true,
     cookie: {
-        maxAge: /* 1000 * 60 * 60 * 24, //1 day */ 1000 * 60 * 2, //2 minutes
+        maxAge: 1000 * 60 * 60 * 24, //1 day /* 1000 * 60 * 2, //2 minutes */
         secure: process.env.NODE_ENV === 'production', 
         httpOnly: true,
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
