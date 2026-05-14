@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { AuthPatientContext } from '../Context/createContext';
+import { AuthContext } from '../Context/createContext';
 import { useEffect } from 'react';
 
 const MapUpdater = ({selectedHospital}) => {
@@ -20,7 +20,7 @@ const MapUpdater = ({selectedHospital}) => {
 }
 
 const LocationMap = ({selectedHospital}) => {
-    const { userLocation, hospitals } = useContext(AuthPatientContext);
+    const { userLocation, hospitals } = useContext(AuthContext);
     if (!userLocation) return <p className='text-center h-full flex items-center justify-center border border-gray-200 rounded-xl'>Loading map...</p>;
 
     

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { adminSessionAuth, isAdmin } = require('../Middleware/authMiddleware');
+const { isAuthenticated, authorizeRoles} = require('../Middleware/authMiddleware');
 const { addHospital } = require('../Controllers/adminController');
 
 // ADMIN ADD HOSPITAL ROUTE
-router.post('/addHospital', adminSessionAuth, isAdmin, addHospital);
+router.post('/addHospital', isAuthenticated, authorizeRoles('admin'), addHospital);
 
 
 module.exports = router;

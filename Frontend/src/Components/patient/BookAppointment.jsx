@@ -1,12 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { useContext } from 'react';
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import { LuCalendar, LuClock, LuFileText, LuUser } from 'react-icons/lu';
 import api from '../../Services/api';
 
 const BookAppointment = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const {allDoctors, fetchPatientData, showSuccess, showError, isSubmitting, setIsSubmitting} = useContext(AuthPatientContext)
+  const {allDoctors, fetchPatientData, showSuccess, showError, isSubmitting, setIsSubmitting, fetchNotifications} = useContext(AuthContext)
   const minDate = new Date().toISOString().split('T')[0];
   const doctorId = new URLSearchParams(location.search).get('doctorId');
  
@@ -16,7 +16,7 @@ const BookAppointment = () => {
 
     try {
       const response = await api.post('/appointment/bookAppointment', data)
-
+      fetchNotifications();
       setTimeout(() => {
         setIsSubmitting(false);
         fetchPatientData();

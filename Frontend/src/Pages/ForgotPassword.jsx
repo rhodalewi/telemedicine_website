@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
-import { AuthPatientContext } from "../Context/createContext";
+import { AuthContext } from "../Context/createContext";
 import { LuArrowBigRight, LuEye, LuEyeClosed } from "react-icons/lu";
 import api from "../Services/api";
 
 const ForgotPassword = () => {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
-  const { isSubmitting, setIsSubmitting, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword, showError, showSuccess } = useContext(AuthPatientContext);
+  const { isSubmitting, setIsSubmitting, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword, showError, showSuccess } = useContext(AuthContext);
   const navigate = useNavigate();
   const matchPassword = watch('newPassword');
 

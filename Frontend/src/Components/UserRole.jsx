@@ -1,8 +1,8 @@
 import { useContext } from 'react'
-import { AuthPatientContext } from '../Context/createContext';
+import { AuthContext } from '../Context/createContext';
 
 const UserRole = ({formType}) => {
-    const { userRole, selectedRole, setSelectedRole } = useContext(AuthPatientContext);
+    const { userRole, selectedRole, setSelectedRole } = useContext(AuthContext);
 
     const registerRole = userRole.filter(role => role.role !== 'admin');
 

@@ -1,12 +1,12 @@
 import { useContext } from 'react';
-import { AuthPatientContext } from '../Context/createContext';
+import { AuthContext } from '../Context/createContext';
 import { LuX } from 'react-icons/lu';
 import { useForm } from 'react-hook-form';
 import api from '../Services/api';
 import { useEffect } from 'react';
 
 const EditProfileForm = ({ setOpenEditForm }) => {
-  const { showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting } = useContext(AuthPatientContext);
+  const { showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, fetchNotifications } = useContext(AuthContext);
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   
   useEffect(() => {
@@ -29,6 +29,7 @@ const EditProfileForm = ({ setOpenEditForm }) => {
         setIsSubmitting(false);
         fetchPatientData(); 
         fetchProfile();
+        fetchNotifications();
 
         setTimeout(() => {
           setOpenEditForm(false);

@@ -1,16 +1,14 @@
 import { useContext} from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import api from '../Services/api';
-import { AuthPatientContext } from '../Context/createContext';
+import { AuthContext } from '../Context/createContext';
 import { LuEye, LuEyeClosed, LuCircleX } from "react-icons/lu";
 import UserRole from '../Components/UserRole';
 
 
 const LoginForm = ({ setFormType, setOpenAuth }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const {  selectedRole, loginEndpoint, showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, showPassword, setShowPassword} = useContext(AuthPatientContext);
-  const navigate = useNavigate();
+  const {  selectedRole, loginEndpoint, showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, showPassword, setShowPassword, navigate} = useContext(AuthContext);
   
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -28,7 +26,7 @@ const LoginForm = ({ setFormType, setOpenAuth }) => {
         reset();
 
         setTimeout(() => {
-          navigate('/user')
+          navigate(`/${selectedRole}/dashboard`);
         }, 1500)
       }, 2000)
 
@@ -89,7 +87,7 @@ const LoginForm = ({ setFormType, setOpenAuth }) => {
                   message: 'Invalid email address'
                 }
               })}
-              className={`w-full px-2.5 py-1.5 rounded-lg border focus:outline-none focus:ring-1  placeholder:text-small ${errors.email ? 'border-error focus:ring-error hover:border-error' : 'border-gray-400 hover:border-primary-hover focus:ring-accent-hover'}`}
+              className={`w-full px-2.5 py-1.5 rounded-lg border focus:outline-none focus:ring-1  placeholder:text-small bg-transparent autofill:bg-transparent autofill:text-white ${errors.email ? 'border-error focus:ring-error hover:border-error' : 'border-gray-400 hover:border-primary-hover focus:ring-accent-hover'}`}
             />
             {errors.email && <p className="text-error text-caption"> {errors.email.message} </p>}
           </div>
@@ -108,7 +106,7 @@ const LoginForm = ({ setFormType, setOpenAuth }) => {
                   message: 'Password must be at least 6 characters long'
                 }
               })}
-              className=' w-full py-1.5 outline-none placeholder:text-small text-small'
+              className=' w-full py-1.5 outline-none placeholder:text-small text-small bg-transparent autofill:bg-transparent autofill:text-white'
             />
             <span onClick={() => setShowPassword(!showPassword)} className="text-h3 text-text-secondary cursor-pointer">
               {showPassword ? <LuEyeClosed  /> : <LuEye />}

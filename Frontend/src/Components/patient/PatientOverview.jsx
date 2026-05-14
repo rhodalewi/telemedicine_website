@@ -1,27 +1,19 @@
 import { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import { LuCalendar, LuFileText, LuUsers, LuClock, LuChevronRight, LuUser } from 'react-icons/lu';
 import LocationMap from '../LocationMap';
 
 
 
 const quickAction = [
-    { id: 1, text: 'Book New Appointment', link:'/user/book-appointment', style: 'bg-accent text-white'},
-    { id: 2, text: 'Find Doctors Near You', link: '/user/find-doctor'},
+    { id: 1, text: 'Book New Appointment', link:'/patient/dashboard/book-appointment', style: 'bg-accent text-white'},
+    { id: 2, text: 'Find Doctors Near You', link: '/patient/dashboard/find-doctor'},
     { id: 3, text: 'View Medical records'}
 ]
 
-const Overview = () => {
-    const { dashboardOverview, userLocation, locationError, collapse } = useContext(AuthPatientContext);
-    const formatDate = (date) => {
-        if (!date) return 'First Visit';
-
-        return new Date(date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric'
-        })
-    };
+const PatientOverview = () => {
+    const { dashboardOverview, userLocation, locationError, collapse, formatDate, DoctorImageUrl } = useContext(AuthContext);
 
     const stats = [
         { id: 1, label: 'Upcoming Appointments', value: dashboardOverview.upcomingAppointment, icon: <LuCalendar />, style: 'bg-blue-500' },
@@ -54,7 +46,7 @@ const Overview = () => {
             <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-6 md:pb-8 border-b border-gray-200 '>
                 <h1 className='font-semibold font-heading'>Appointments History</h1>
                 <NavLink 
-                    to={'/user/appointments'}
+                    to={'/patient/dashboard/appointments'}
                     className='text-small md:text-body flex items-center gap-2 px-2 py-0.5 rounded-lg bg-accent/10 border border-gray-300 hover:shadow-soft'
                 >
                     View all 
@@ -74,7 +66,10 @@ const Overview = () => {
                                     {/* doctor profile picture */}
                                     <div className='h-10 w-10 md:h-12 md:w-12 rounded-full'>
                                         {item.doctorspicture && item.doctorspicture.length > 0 ? (
-                                            <img src={`/uploads/${item.doctorspicture}`} alt={item.first_name} className='w-full h-auto object-cover rounded-full' />
+                                            <img
+                                                src={`${DoctorImageUrl}${item.doctorspicture}`}
+                                                alt={`${item.first_name = ' ' + item.last_name}`}
+                                                className='w-full h-auto object-cover rounded-full' />
                                         ) : (
                                             <span className='bg-accent/20 w-full h-full rounded-full flex items-center justify-center'>
                                                 <LuUser className='text-accent text-body md:text-h3' />
@@ -156,4 +151,4 @@ const Overview = () => {
   )
 }
 
-export default Overview;
+export default PatientOverview;

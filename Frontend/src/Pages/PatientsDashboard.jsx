@@ -1,12 +1,12 @@
-import Header from '../Components/patient/Header';
+import Header from '../Components/Header';
 import SideBar from '../Components/patient/SideBar';
-import { AuthPatientContext } from '../Context/createContext';
+import { AuthContext } from '../Context/createContext';
 import { useEffect, useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 
 
 const PatientsDashboard = () => {
-  const { fetchPatientData, fetchDoctorsData, fetchAllAppointments, collapse, setUserLocation, setLocationError } = useContext(AuthPatientContext)
+  const { fetchPatientData, fetchDoctorsData, fetchAllAppointments, collapse, setUserLocation, setLocationError } = useContext(AuthContext)
 
   useEffect(() => {
     fetchPatientData();
@@ -43,6 +43,6 @@ const PatientsDashboard = () => {
       </main>
     </div>
   )
-}
+};
 
 export default PatientsDashboard;

@@ -1,10 +1,10 @@
 import { useContext, useState, useEffect } from 'react'
 import {  LuChevronDown, LuSearch } from 'react-icons/lu';
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import DoctorCard from '../DoctorCard';
 
 const FindDoctor = () => {
-    const { allDoctors, search, setSearch, selectedSpecialty, setSelectedSpecialty, findDoctors, collapse } = useContext(AuthPatientContext);
+    const { allDoctors, search, setSearch, selectedSpecialty, setSelectedSpecialty, findDoctors, collapse } = useContext(AuthContext);
     const [dropdown, setDropdown] = useState(false);
     const [availability, setAvailability] = useState(false);
 

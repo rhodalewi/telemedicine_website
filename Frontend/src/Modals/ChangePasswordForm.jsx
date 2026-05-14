@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
-import { AuthPatientContext } from "../Context/createContext";
+import { AuthContext } from "../Context/createContext";
 import { LuX, LuEye, LuEyeClosed} from "react-icons/lu";
 import api from "../Services/api";
 
 const ChangePasswordForm = ({ setOpenChangePassword }) => {
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
-    const { isSubmitting, setIsSubmitting, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword, fetchPatientData, showError, showSuccess } = useContext(AuthPatientContext);
+    const { isSubmitting, setIsSubmitting, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword, fetchPatientData, fetchNotifications, showError, showSuccess } = useContext(AuthContext);
 
     const matchPassword = watch('newPassword');
 
@@ -20,6 +20,7 @@ const ChangePasswordForm = ({ setOpenChangePassword }) => {
                 reset();
                 setIsSubmitting(false);
                 fetchPatientData();
+                fetchNotifications();
                 setTimeout(() => {
                     setOpenChangePassword(false);
                 }, 2500);

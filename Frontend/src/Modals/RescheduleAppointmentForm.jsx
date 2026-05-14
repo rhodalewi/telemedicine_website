@@ -1,13 +1,13 @@
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { AuthPatientContext } from '../Context/createContext';
+import { AuthContext } from '../Context/createContext';
 import api from '../Services/api';
 import { LuCalendar, LuClock, LuX } from 'react-icons/lu';
 
 
 const RescheduleAppointmentForm = ({appointment, closeRescheduleForm}) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const { isSubmitting, setIsSubmitting, fetchAllAppointments, fetchPatientData, showError, showSuccess } = useContext(AuthPatientContext)
+    const { isSubmitting, setIsSubmitting, fetchAllAppointments, fetchPatientData, showError, showSuccess, fetchNotifications } = useContext(AuthContext)
     const minDate = new Date().toISOString().split('T')[0];
 
     const onSubmit = async (data) => {
@@ -21,9 +21,9 @@ const RescheduleAppointmentForm = ({appointment, closeRescheduleForm}) => {
                 setIsSubmitting(false);
                 fetchPatientData();
                 fetchAllAppointments();
+                fetchNotifications()
                 setTimeout(() => {
                     closeRescheduleForm(false);
-                   
                 }, 2000)
             }, 2000)
         } catch (error) {

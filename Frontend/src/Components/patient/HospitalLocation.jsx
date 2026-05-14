@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import api from '../../Services/api';
 import LocationMap from '../LocationMap';
 import { LuClock, LuMapPin, LuNavigation, LuPhoneCall, LuSearch, LuUser } from "react-icons/lu";
@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 
 
 const HospitalLocation = () => {
-    const { userLocation, hospitals, setHospitals, showError } = useContext(AuthPatientContext);
+    const { userLocation, hospitals, setHospitals, showError, DoctorImageUrl } = useContext(AuthContext);
     const [selectedHospital, setSelectedHospital] = useState(null)
     const [searchHospital, setSearchHospital] = useState('');
     const [hospitalDoctors, setHospitalDoctors] = useState([]);
@@ -65,9 +65,7 @@ const HospitalLocation = () => {
             const response = await api.get(`/hospital/${hospitalId}/doctor`);
             setHospitalDoctors(response.data);
         } catch (error) {
-            setTimeout(() => {
-                showError(error.response?.data?.message)
-            }, 1500);
+            console.error(error);
         }
     };
 
@@ -207,7 +205,10 @@ const HospitalLocation = () => {
                                                           {/* doctors profile picture */}
                                                         <div className='h-10 w-10 rounded-full'>
                                                             {doctor.profile_picture && doctor.profile_picture.length > 0 ? (
-                                                                <img src={`/uploads/${doctor.profile_picture}`} alt={doctor.first_name} className='w-full h-auto object-cover rounded-full' />
+                                                                <img
+                                                                    src={`${DoctorImageUrl}${doctor.profile_picture}`}
+                                                                    alt={`${doctor.first_name + ' ' + doctor.last_name}`}
+                                                                    className='w-full h-auto object-cover rounded-full' />
                                                             ) : (
                                                                 <span className='bg-accent/10 w-full h-full rounded-full flex items-center justify-center'>
                                                                     <LuUser className='text-accent text-h2' />
@@ -225,7 +226,7 @@ const HospitalLocation = () => {
 
                                                     {/* Book appointment with a specific doctor */}
                                                     <NavLink
-                                                        to={`/user/book-appointment?doctorId=${doctor.doctor_id}`}
+                                                        to={`/patient/dashboard/book-appointment?doctorId=${doctor.doctor_id}`}
                                                         onClick={() => doctor.doctor_id}
                                                         className='px-3 py-1 text-small rounded-xl bg-accent text-white hover:bg-accent-hover transition-all duration-500 shadow-soft ease-in-out self-end cursor-pointer'
                                                     >

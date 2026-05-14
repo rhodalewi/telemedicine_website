@@ -1,12 +1,12 @@
 import { useContext, useRef } from 'react'
-import { AuthPatientContext } from '../../Context/createContext'
+import { AuthContext } from '../../Context/createContext'
 import api from '../../Services/api'
 import { LuUser, LuCamera } from 'react-icons/lu'
 import { useState } from 'react'
 import ProfileForm from './ProfileForm'
 
 const Profile = () => {
-  const { dashboardOverview, showSuccess, showError, fetchPatientData } = useContext(AuthPatientContext);
+  const { dashboardOverview, showSuccess, showError, fetchPatientData, PatientImageUrl, fetchNotifications } = useContext(AuthContext);
   const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -31,6 +31,7 @@ const Profile = () => {
       });
       showSuccess(response.data.message);
       fetchPatientData();
+      fetchNotifications();
     } catch (error) {
       showError(error.response?.data?.message)
     }
@@ -49,7 +50,8 @@ const Profile = () => {
           <div className='border border-gray-300 relative h-24 w-24 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden'>
             {dashboardOverview.patientData?.profile_picture && dashboardOverview.patientData?.profile_picture.length > 0 ? (
               <img
-                src={preview || `http://localhost:8080/uploads/patient/${dashboardOverview.patientData?.profile_picture}`} alt="profile"
+                src={preview || `${PatientImageUrl}${dashboardOverview.patientData.profile_picture}`}
+                alt={`${dashboardOverview.patientData.first_name + ' ' + dashboardOverview.patientData.last_name}`}
                 className='w-full h-auto object-contain' />
             ) : (
                 <LuUser className='text-accent text-h1' />

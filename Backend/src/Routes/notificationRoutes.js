@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { patientSessionAuth, isPatient } = require('../Middleware/authMiddleware');
-const { getPatienttNotifications, markAsRead, markAllRead, deleteNotification } = require('../Controllers/notificationController');
+const { isAuthenticated, authorizeRoles } = require('../Middleware/authMiddleware');
+const { getNotifications, markAsRead, markAllRead, deleteNotification } = require('../Controllers/notificationController');
 
-//GET NOTIFICATIONS FOR PATIENT;
-router.get('/patientNotifications', patientSessionAuth, isPatient, getPatienttNotifications);
+//GET NOTIFICATIONS FOR USERS;
+router.get('/getNotifications', isAuthenticated, authorizeRoles('patient', 'doctor'), getNotifications);
 
 //MARK ONE NOTIFICATION AS READ
-router.put('/markAsRead/:notificationId/read', patientSessionAuth, isPatient, markAsRead);
+router.put('/markAsRead/:notificationId/read', isAuthenticated, authorizeRoles('patient', 'doctor'), markAsRead);
 
 //MARK ALL NOTIFICATION AS READ
-router.put('/markAllRead', patientSessionAuth, isPatient, markAllRead);
+router.put('/markAllRead', isAuthenticated, authorizeRoles('patient', 'doctor'), markAllRead);
 
 //DELETE NOTIFICATION
-router.delete('/deleteNotification/:notificationId', patientSessionAuth, isPatient, deleteNotification);
+router.delete('/deleteNotification/:notificationId', isAuthenticated, deleteNotification);
 
 module.exports = router;

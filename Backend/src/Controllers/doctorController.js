@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 const db = require('../config/database');
+const fs = require('fs');
+const { createNotifications, getRecentNotification } = require('../utils/notification');
 
 //DOCTOR REGISTRATION
 exports.registerDoctor = async (req, res) => {
@@ -45,21 +47,106 @@ exports.loginDoctor = async (req, res) => {
 
         //compare password
         const comparePassword = await bcrypt.compare(password, doctor[0].password_hash);
-        if (!comparePassword) return res.status(400).json({ message: 'Wrond password, please input the correct password' });
+        if (!comparePassword) {
+            return res.status(400).json({ message: 'Wrond password, please input the correct password' })
+        };
 
-        req.session.doctorId = doctor[0].id
-        req.session.role = 'patient'
+        
+        req.session.user = {
+            id: doctor[0].doctor_id,
+            role: 'doctor'
+        }
 
         res.status(200).json({
-            message: 'Login successfull. Redirecting...', patient: {
-                id: doctor[0].id,
+            message: 'Login successfull. Redirecting...', doctor: {
+                id: doctor[0].doctor_id,
                 first_name: doctor[0].first_name,
+                last_name: doctor[0].last_name,
                 email: doctor[0].email
             }
-        })
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Login failed!', error: error.message })
+    }
+};
+
+//DOCTOR DASHBOARD
+exports.doctorDashboard = async (req, res) => {
+    const doctorId = req.session.user.id;
+
+    try {
+        const [doctorData] = await db.execute('SELECT * FROM doctors WHERE doctor_id = ?', [doctorId]);
+
+        //Today's appointment
+        const [todayAppointment] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ? AND appointment_date = CURDATE() AND status IN ("booked", "rescheduled")', [doctorId]);
+
+        //upcoming appointment
+        const [upcomingAppointment] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ? AND status IN ("booked", "rescheduled") AND appointment_date >= CURDATE()', [doctorId]);
+        //total patients
+        const [totalPatients] = await db.execute('SELECT COUNT(DISTINCT patient_id) AS count FROM appointments WHERE doctor_id = ? AND status = "completed"', [doctorId]);
+
+        //total appointments
+        const [totalAppointments] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ?', [doctorId]);
+
+        //last visit
+        await db.execute('UPDATE doctors SET last_visit = NOW() WHERE doctor_id = ?', [doctorId]);
+        const lastVisit = doctorData[0].last_visit;
+
+        //Recent Notification
+        const recentNotifications = await getRecentNotification(doctorId, 'doctor')
+    
+        return res.status(200).json({
+            doctorResult: doctorData[0],
+            todayAppointment: todayAppointment[0].count,
+            upcomingAppointment: upcomingAppointment[0].count,
+            totalPatients: totalPatients[0].count,
+            totalAppointments: totalAppointments[0].count,
+            lastVisit: lastVisit,
+            recentNotifications
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong, please try again!', error: error.message });
+    }
+};
+
+//GET ALL DOCTORS APPOINTMENT
+exports.doctorAllAppointments = async (req, res) => {
+    const doctorId = req.session.user.id;
+
+    try {
+        const [allAppointments] = await db.execute(`
+            SELECT
+                a.appointment_id,
+                a.appointment_date,
+                a.appointment_time,
+                CASE 
+                    WHEN a.status = 'booked' 
+                    OR a.status = 'rescheduled' 
+                    THEN 'upcoming' 
+                    ELSE a.status 
+                END AS status,
+                a.reason,
+                p.first_name,
+                p.last_name,
+                p.gender,
+                p.date_of_birth,
+                p.profile_picture AS patientPicture
+            FROM 
+                appointments a
+            JOIN 
+                patients p
+            ON 
+                a.patient_id = p.patient_id
+            WHERE
+                a.doctor_id = ?
+            ORDER BY a.appointment_date ASC
+        `, [doctorId]);
+        
+        return res.status(200).json(allAppointments)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching appointment', error: error.message })
     }
 };
 
@@ -103,18 +190,55 @@ exports.findDoctors = async (req, res) => {
 };
 
 //UPLOAD PROFILE PICTURE
-exports.uploadProfilePicture = async (req, res) => {
+exports.uploadDoctorImage = async (req, res) => {
+    const doctorId = req.session.user.id;
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+    };
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        };
         const imagePath = `/upload/doctor/${req.file.filename}`;
+        //remove old image
+        const [oldImages] = await db.execute(`SELECT profile_picture FROM patients WHERE doctor_id = ?`, [doctorId]);
+        const oldImage = oldImages[0].profile_picture;
+        if (oldImage) {
+            const oldImaagePath = path.join(__dirname, '../uploads/doctor', oldImage);
+            
+            if (fs.existsSync(oldImaagePath)) {
+                fs.unlinkSync(oldImaagePath);
+            };
+        };
 
-        await db.execute('UPDATE doctors SET profile_picture = ? WHERE doctor_id = ?', I[imagePath, req.param.id]);
+        //insert new image
+        await db.execute('UPDATE doctors SET profile_picture = ? WHERE doctor_id = ?', [imagePath, doctorId]);
+
+        //create notification
+        await createNotifications({
+            user_id: doctorId,
+            user_role: 'doctor',
+            title: 'Profile Picture Updated Successfully',
+            message: 'Your profile picture has been updated successfully'
+        })
         return res.status(200).json({ message: 'Image uploaded successfully', imagePath })
     } catch (error) {
         console.error('Error uploading image:', error);
         return res.status(500).json({ message: 'Failed to upload image!', error: error.message });
+    }
+};
+
+//GET APPOINTMENT FOR A DOCTOR TODAY'S SCHEDULE
+exports.doctorTodaySchedule = async (req, res) => {
+    const doctorId = req.session.user.id;
+
+    try {
+        const [todayAppointments] = await db.execute('SELECT a.appointment_id, a.appointment_date, a.appointment_time, CASE WHEN a.status = "booked" OR a.status = "rescheduled" THEN "upcoming" ELSE a.status END AS status, p.first_name AS patient_firstname, p.last_name AS patient_lastname, p.profile_picture AS patientpicture FROM appointments a JOIN patients p ON a.patient_id = p.patient_id WHERE a.doctor_id = ? AND a.appointment_date = CURDATE() ORDER BY a.appointment_time ASC', [doctorId]);
+
+        //All Apointments
+        /* const [allAppointments] = await db.execute('SELECT ') */
+
+        return res.status(200).json(todayAppointments);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error fetching today's appointments", error: error.message });
     }
 };
 

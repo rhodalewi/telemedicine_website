@@ -65,8 +65,12 @@ exports.loginPatient = async (req, res) => {
         if (!comparePassword) return res.status(400).json({ message: 'Wrong password. Please input the correct password' });
 
         //create session
-        req.session.patientId = patient[0].patient_id;
-        req.session.role = 'patient';
+        req.session.user = {
+            id: patient[0].patient_id,
+            role: 'patient'
+        };
+
+      /*   res.redirect('/patient/dashboard'); */
 
         return res.status(200).json({
             message: 'Login successful. Redirecting...', patient: {
@@ -74,6 +78,7 @@ exports.loginPatient = async (req, res) => {
                 first_name: patient[0].first_name,
                 last_name: patient[0].last_name,
                 email: patient[0].email,
+                profile_picture: patient[0].profile_picture
             }
         });
     } catch (error) {
@@ -84,12 +89,11 @@ exports.loginPatient = async (req, res) => {
 
 //PATIENT DASHBOARD
 exports.patientDashboard = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
 
     try {
-            // QUERIES
+            // DASHBOARD OVERVIEW QUERIES
         const [patient] = await db.execute('SELECT * FROM patients WHERE patient_id = ?', [patientId])
-        const [notificationResult] = await db.execute('SELECT COUNT(*) AS count FROM notifications WHERE patient_id = ? AND is_read = 0', [patientId]);
         const [upcomingAppointmentData] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE patient_id = ? AND status IN ("booked", "rescheduled") AND appointment_date >= CURDATE()', [patientId]);
         const [totalAppointmentData] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE patient_id = ?', [patientId]);
         const [doctorsConsulted] = await db.execute('SELECT COUNT(doctor_id) AS doctors_consulted FROM appointments WHERE patient_id = ? AND status = ("completed")', [patientId]);
@@ -131,11 +135,8 @@ exports.patientDashboard = async (req, res) => {
             return res.status(400).json({message: 'Patient not found'})
         };
 
-
-
         return res.status(200).json({
             patientResult: patient[0],
-            notificationCount: notificationResult[0].count,
             upcomingAppointmentCount: upcomingAppointmentData[0].count,
             totalAppointmentCount: totalAppointmentData[0].count,
             doctorsConsulted: doctorsConsulted[0].doctors_consulted,
@@ -149,7 +150,7 @@ exports.patientDashboard = async (req, res) => {
 };
 
 exports.editProfileDetails = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
 
     try {
         const [patient] = await db.execute('SELECT patient_id, first_name, last_name, email, phone, gender, emergency_contact, address FROM patients WHERE patient_id = ?', [patientId]);
@@ -163,29 +164,41 @@ exports.editProfileDetails = async (req, res) => {
 
 //UPDATE PROFILE DETAILS
 exports.updateProfileDetails = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
     const { first_name, last_name, phone, date_of_birth, gender, address, emergency_contact } = req.body;
 
     try {
         await db.execute('UPDATE patients SET first_name = ?, last_name = ?, phone = ?, date_of_birth = ?, gender = ?, address = ?, emergency_contact = ? WHERE patient_id = ?', [first_name, last_name, phone, date_of_birth, gender, address, emergency_contact, patientId]);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Profile Updated Successfully',
-            'Your profile details have been updated successfully'
-        );
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Profile Updated Successfully',
+            message: 'Your profile details have been updated successfully',
+            type: 'success'
+        });
 
         return res.status(200).json({ message: 'Profile updated successfully' })
     } catch (error) {
         console.error(error);
+
+        //INSERT NOTIFICATION
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Profile Update Failed',
+            message: 'Failed to update profile',
+            type: 'error'
+        });
+
         res.status(500).json({ message: 'Update failed, try again!', error: error.message });
     }
 };
 
 //CHANGE PASSWORD
 exports.changePassword = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
     const {currentPassword, newPassword } = req.body;
     try {
         const [patient] = await db.execute('SELECT password_hash FROM patients WHERE patient_id = ?', [patientId]);
@@ -204,22 +217,33 @@ exports.changePassword = async (req, res) => {
         await db.execute('UPDATE patients SET password_hash = ? WHERE patient_id = ?', [hashNewPassword, patientId]);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Password Changed Successfully',
-            'Your account password has been changed successfully. If you did not make this change, please contact support immediately!'
-        );
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Password Changed Successfully',
+            message: 'Your account password has been changed successfully. If you did not make this change, please contact support immediately!',
+            type: 'success'
+        });
 
         return res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
         console.error(error);
+
+        //INSERT NOTIFICATION
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Password Change Failed',
+            message: 'Failed to change password',
+            type: 'error'
+        });
+
         res.status(500).json({ message: 'Error changing password, try again!', error: error.message });
     };
 };
 
 //RESET PASSWORD
 exports.resetPassword = async (req, res) => {
-    /* const { email } = req.params; */
     const {email, newPassword } = req.body;
     try {
         const [patient] = await db.execute('SELECT patient_id, email FROM patients WHERE email = ?', [email]);
@@ -240,7 +264,7 @@ exports.resetPassword = async (req, res) => {
 
 //UPLOAD PROFILE PICTURE
 exports.uploadPatientImage = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
     };
@@ -258,23 +282,36 @@ exports.uploadPatientImage = async (req, res) => {
             };
         };
 
+        //insert new image
         await db.execute('UPDATE patients SET profile_picture = ? WHERE patient_id = ?', [profilePicturePath, patientId]);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Profile Picture Updated Successfully',
-            'Your profile picture has been updated successfully'
-        );
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Profile Picture Updated Successfully',
+            message: 'Your profile picture has been updated successfully',
+            type: 'success'
+        });
 
         return res.status(200).json({ message: 'Image uploaded successfully', Image: profilePicturePath });
     } catch (error) {
         console.log(error)
+
+        //INSERT NOTIFICATION
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Profile Picture Update Failed',
+            message: 'Failed to update profile picture!',
+            type: 'error'
+        });
+
         res.status(500).json({ message: 'Upload failed. Try again!', error: error.message });
     }
 };
 
-//PATIENT LOGOUT
+// LOGOUT
 exports.logout = async (req, res) => {
     try {
         req.session.destroy(() => {
@@ -289,7 +326,7 @@ exports.logout = async (req, res) => {
 
 //DELETE ACCOUNT
 exports.deleteAccount = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
 
     try {
         await db.execute('DELETE FROM patients WHERE patient_id = ?', [patientId]);

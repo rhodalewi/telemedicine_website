@@ -1,5 +1,5 @@
-import { useState, useContext } from 'react';
-import { AuthPatientContext } from '../../Context/createContext';
+import { useContext } from 'react';
+import { AuthContext } from '../../Context/createContext';
 import RescheduleAppointment from './RescheduleAppointmentButton';
 import CancelAppointment from './CancelAppointmentButton';
 
@@ -8,15 +8,17 @@ import { LuCalendar, LuClock, LuUser } from 'react-icons/lu';
 
 
 const MyAppointment = () => {
-    const filters = ['all', 'upcoming', 'completed', 'cancelled']
-    const [activeFilter, setActiveFilter] = useState('all');
-    const { dashboardOverview, collapse } = useContext(AuthPatientContext);
+    const { dashboardOverview, collapse, DoctorImageUrl, formatTime , filters, activeFilter, setActiveFilter} = useContext(AuthContext);
+
+    //remove today's appointment filter
+    const updatedFilter = filters.shift();
 
     const filteredAppointment = dashboardOverview.allAppointments.filter(appointment => {
         if (activeFilter === 'all') return true;
         if (activeFilter === 'upcoming') return appointment.status === 'upcoming' || appointment.status === 'rescheduled';
         if (activeFilter === 'completed') return appointment.status === 'completed';
         if (activeFilter === 'cancelled') return appointment.status === 'cancelled';
+        if (activeFilter === 'pending') return appointment.status === 'pending';
     });
 
   return (
@@ -28,7 +30,7 @@ const MyAppointment = () => {
         
           {/* Filter option */}
         <div className='border-b border-gray-200 flex items-center justify-between md:block md:space-x-8'>
-              {filters.map(filter => (
+              {updatedFilter.map(filter => (
                   <button
                       key={filter}
                       onClick={() => setActiveFilter(filter)}
@@ -49,6 +51,7 @@ const MyAppointment = () => {
                         {activeFilter === 'completed' && 'No completed appointment yet!'}
                         {activeFilter === 'upcoming' && 'No upcoming appointment yet!'}
                         {activeFilter === 'all' && 'No appointment yet!'}
+                        {activeFilter === 'pending' && 'No pending appointment yet!'}
                     </p>
                 </div>
             ) : (
@@ -59,7 +62,11 @@ const MyAppointment = () => {
                                 {/* doctors profile picture */}
                                 <div className='h-10 w-10 rounded-full'>
                                     {appointments.doctorspicture && appointments.doctorspicture.length > 0 ? (
-                                        <img src={`/uploads/${appointments.doctorspicture}`} alt={appointments.first_name} className='w-full h-auto object-cover rounded-full' />
+                                        <img
+                                            /* src={`/uploads/${appointments.doctorspicture}`} */
+                                            src={`${DoctorImageUrl}${appointments.doctorspicture}`}
+                                            alt={`${appointments.first_name + ' ' + appointments.last_name}`}
+                                            className='w-full h-auto object-cover rounded-full' />
                                     ) : (
                                         <span className='bg-accent/10 w-full h-full rounded-full flex items-center justify-center'>
                                             <LuUser className='text-accent text-body md:text-h3' />
@@ -88,7 +95,7 @@ const MyAppointment = () => {
 
                                         <div className='flex items-center gap-2'>
                                             <LuClock />
-                                            <p className='text-small'>{appointments.appointment_time}</p>
+                                            <p className='text-small'>{formatTime(appointments.appointment_time)}</p>
                                         </div>
                                     </div>
 
@@ -100,6 +107,12 @@ const MyAppointment = () => {
                                 <div className={`flex lg:flex-col justify-center gap-3 mt-6 lg:mt-4 transition-all duration-500 ease-in-out ${collapse ? 'lg:flex-col' : 'md:flex-col'}`}>
                                     <RescheduleAppointment appointment={appointments} />
                                     <CancelAppointment appointment={appointments} />
+                                </div>
+                            )}
+
+                            {(appointments.status === 'pending') && (
+                                <div className='my-auto'>
+                                    <CancelAppointment appointment={appointments}/>
                                 </div>
                             )}
                         </div>

@@ -1,10 +1,10 @@
 import { useContext } from 'react';
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import { LuX } from 'react-icons/lu';
 import api from '../../Services/api';
 
 const CancelAppointment = ({ appointment }) => {
-  const { showError, showSuccess, fetchAllAppointments, fetchPatientData } = useContext(AuthPatientContext);
+  const { showError, showSuccess, fetchAllAppointments, fetchPatientData, fetchNotifications } = useContext(AuthContext);
 
   const handleCancel = async (appointmentId) => {
     const confirmCancel = window.confirm(`Are you sure you want to cancel this appointment?`)
@@ -15,6 +15,7 @@ const CancelAppointment = ({ appointment }) => {
       showSuccess(response.data.message);
       fetchAllAppointments();
       fetchPatientData();
+      fetchNotifications();
     } catch (error) {
       showError(error.response?.data?.message);
     }

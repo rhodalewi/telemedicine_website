@@ -1,7 +1,10 @@
+import { useContext } from "react";
 import { LuCalendar, LuUser, LuClock } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
+import { AuthContext } from "../Context/createContext";
 
 const DoctorCard = ({ doctor, collapse }) => {
+    const { DoctorImageUrl } = useContext(AuthContext);
     
   return (
     <div key={doctor.doctor_id} className='p-6 rounded-xl border border-gray-300 shadow-sm bg-white/90 space-y-6' >
@@ -9,7 +12,11 @@ const DoctorCard = ({ doctor, collapse }) => {
                 {/* doctors profile picture */}
             <div className='h-14 w-14 md:h-18 md:w-18 rounded-full'>
                 {doctor.profile_picture && doctor.profile_picture.length > 0 ? (
-                    <img src={`/uploads/${doctor.profile_picture}`} alt={doctor.first_name} className='w-full h-auto object-cover rounded-full' />
+                    <img 
+                          /* src={`/uploads/${doctor.profile_picture}`}  */
+                        src={`${DoctorImageUrl}${doctor.profile_picture}`}
+                        alt={`${doctor.first_name + ' ' + doctor.last_name}`} 
+                        className='w-full h-auto object-cover rounded-full' />
                 ) : (
                     <span className='bg-accent/10 w-full h-full rounded-full flex items-center justify-center'>
                         <LuUser className='text-accent text-h2' />
@@ -42,7 +49,7 @@ const DoctorCard = ({ doctor, collapse }) => {
                 </div>
                 
                 <NavLink 
-                    to={`/user/book-appointment?doctorId=${doctor.doctor_id}`}
+                    to={`/patient/dashboard/book-appointment?doctorId=${doctor.doctor_id}`}
                     onClick={() => doctor.doctor_id}
                     className='border-0 px-3 py-1.5 text-white bg-primary hover:bg-primary-hover hover:shadow-soft rounded-xl text-center text-small transition-all duration-500 ease-in-out md:w-fit md:self-end whitespace-nowrap'
                 >

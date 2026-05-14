@@ -12,7 +12,7 @@ exports.bookAppointment = async (req, res) => {
         return res.status(400).json({ errors: errors.array(), message: errors.array()[0].msg });
     };
 
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
     const { doctor_id, appointment_date, appointment_time, reason } = req.body;
 
     try {
@@ -26,45 +26,56 @@ exports.bookAppointment = async (req, res) => {
         };
 
         //Check double booking
-        const [existingBooking] = await db.execute(`SELECT appointment_id FROM appointments WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? AND status IN ('booked', 'confirmed')`, [doctor_id, appointment_date, appointment_time]);
+        const [existingBooking] = await db.execute(`SELECT appointment_id FROM appointments WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? AND status IN ('booked')`, [doctor_id, appointment_date, appointment_time]);
 
         if (existingBooking.length > 0) {
             return res.status(400).json({ message: 'Doctor already booked. Pick another date and time!' });
         };
-     
+
+        const [patientName] = await db.execute('SELECT a.appointment_id, p.first_name, p.last_name FROM appointments a JOIN patients p ON a.patient_id = p.patient_id WHERE p.patient_id = ?', [patientId])
+
         //Book appointment
-        await db.execute(`INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, reason, status) VALUES (?, ?, ?, ?, ?, 'booked')`,
+        await db.execute(`INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, reason, status) VALUES (?, ?, ?, ?, ?, 'pending')`,
             [patientId, doctor_id, appointment_date, appointment_time, reason]
         );
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Appointment Booked Successfully',
-            `Your appointment with Dr. ${doctorAvailability[0].first_name} ${doctorAvailability[0].last_name} has been booked for ${appointment_date} at ${formatTime(appointment_time)}`,
-            'success'
-        );
-       
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Appointment Booked Successfully',
+            message: `Your appointment with Dr. ${doctorAvailability[0].first_name} ${doctorAvailability[0].last_name} has been booked for ${appointment_date} at ${formatTime(appointment_time)}`,
+            type: 'success'
+        });
+
+        await createNotifications({
+            user_id: doctorAvailability[0].doctor_id,
+            user_role: 'doctor',
+            title: 'New Appointment',
+            message: `${patientName[0].first_name} ${patientName[0].last_name} booked an appoinment with you`
+        });
+
         return res.status(200).json({ message: 'Appointment booked successfully' });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Booking failed!', error: error.message })
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Appointment Booking failed',
-            'An error occured while booking your appointment. Please try again later!',
-            'error'
-        )
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Appointment Booking failed',
+            message: 'An error occured while booking your appointment. Please try again later!',
+            type: 'error'
+        });
+        
+        return res.status(500).json({ message: 'Booking failed!', error: error.message })  
     };
 };
 
 //ALL APPOINTMENT
 exports.allAppointment = async (req, res) => {
-    const patientId = req.session.patientId;
-    if (!patientId) return res.status(400).json({ message: 'Unauthorized, please log in!' });
+    const patientId = req.session.user.id;
 
     try {
         const [appointments] = await db.execute(`
@@ -100,7 +111,7 @@ exports.allAppointment = async (req, res) => {
 
 //RESCHEDULE APPOINTMENT
 exports.rescheduleAppointment = async (req, res) => {
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
     const { appointmentId } = req.params;
     const { appointment_date, appointment_time } = req.body;
 
@@ -134,12 +145,13 @@ exports.rescheduleAppointment = async (req, res) => {
         await db.execute(`UPDATE appointments SET appointment_date = ?, appointment_time = ?, status = 'rescheduled' WHERE appointment_id = ? `, [appointment_date, appointment_time, appointmentId]);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Appointment Rescheduled Successfully',
-            `Your appointment with Dr. ${doctor[0].first_name} ${doctor[0].last_name} has been rescheduled to ${appointment_date} at ${formatTime(appointment_time)}`,
-            'success'
-        );
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Appointment Rescheduled Successfully',
+            message: `Your appointment with Dr. ${doctor[0].first_name} ${doctor[0].last_name} has been rescheduled to ${appointment_date} at ${formatTime(appointment_time)}`,
+            type: 'success'
+        });
 
         return res.status(200).json({ message: 'Appointment rescheduled successfully' })
 
@@ -147,12 +159,13 @@ exports.rescheduleAppointment = async (req, res) => {
         console.error(error);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Apppointment Rescheduling failed',
-            'An error occured while rescheduling your appointment. Please try again later!',
-            'error'
-        )
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Apppointment Rescheduling failed',
+            message: 'An error occured while rescheduling your appointment. Please try again later!',
+            type: 'error'
+        })
 
         return res.status(500).json({ message: 'Error rescheduling appointment!', error: error.message });        
     }
@@ -161,7 +174,7 @@ exports.rescheduleAppointment = async (req, res) => {
 //CANCEL APPOINTMENT
 exports.cancelAppointment = async (req, res) => {
     const { appointmentId } = req.params;
-    const patientId = req.session.patientId;
+    const patientId = req.session.user.id;
 
     try {
         const [appointment] = await db.execute(`SELECT appointment_id, doctor_id, appointment_date, appointment_time, status FROM appointments WHERE appointment_id = ? AND patient_id = ?`, [appointmentId, patientId]);
@@ -188,26 +201,28 @@ exports.cancelAppointment = async (req, res) => {
         const [doctor] = await db.execute('SELECT first_name, last_name FROM doctors WHERE doctor_id = ?', [appointment[0].doctor_id]);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Appointment Cancelled Successfully',
-            `Your appointment scheduled with Dr. ${doctor[0].first_name} ${doctor[0].last_name} on ${appointment[0].appointment_date} at ${formatTime(appointment[0].appointment_time)} has been cancelled successfully`,
-            'success'
-        );
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Appointment Cancelled Successfully',
+            message: `Your appointment scheduled with Dr. ${doctor[0].first_name} ${doctor[0].last_name} on ${appointment[0].appointment_date} at ${formatTime(appointment[0].appointment_time)} has been cancelled successfully`,
+            type: 'success'
+        });
 
         return res.status(200).json({message: 'Appointments cancelled successfully'})
     } catch (error) {
         console.error(error);
 
         //INSERT NOTIFICATION
-        await createNotifications(
-            patientId,
-            'Appointment cancelling failed',
-            'An error occured while cancelling your appointment, Please try again later!',
-            'error'
-        );
+        await createNotifications({
+            user_id: patientId,
+            user_role: 'patient',
+            title: 'Appointment cancelling failed',
+            message: 'An error occured while cancelling your appointment, Please try again later!',
+            type: 'error'
+        });
 
         return res.status(500).json({message: 'Error canceling appointment!', error: error.message})
     }
-
 };
+

@@ -104,7 +104,7 @@ const LandingPage = () => {
         {/* HERO SECTION */}
         <div className=''>
             {/* HEADER */}
-            <header className={`fixed w-full top-0 py-3.5 border-b border-gray-200 z-20 bg-background ${ isScrolled ? 'md:bg-white/80 md:backdrop-blur-md group shadow-soft  border-none'  : ''}`}>
+            <header className={`fixed w-full top-0 py-6 border-b border-gray-200 z-20 bg-background ${ isScrolled ? 'md:bg-white/80 md:backdrop-blur-md group shadow-soft  border-none'  : ''}`}>
                 <div className="max-w-[90%] mx-auto flex items-center justify-between">
                       {/* LOGO */}
                     <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ const LandingPage = () => {
                                 duration={700}
                                 offset={-70}
                                 activeClass='text-primary border-b-3 border-primary rounded-b-md'
-                                className={`text-body pb-1.5 hover:text-primary hover:border-b-3 border-primary rounded-b-md transition-all duration-500 ease-in-out cursor-pointer ${isScrolled ? 'hover:text-text-primary hover:border-text-secondary' : ''}`}
+                                className={`text-sm pb-1.5 after: hover:text-primary  hover:border-b-3 border-primary rounded-b-md transition-all duration-500 ease-in-out cursor-pointer ${isScrolled ? 'hover:text-text-primary hover:border-text-secondary' : ''}`}
                             >
                                 {links.name}
                             </Link>

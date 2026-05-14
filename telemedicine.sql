@@ -56,7 +56,7 @@ CREATE TABLE `appointments` (
   `doctor_id` int NOT NULL,
   `appointment_date` date NOT NULL,
   `appointment_time` time NOT NULL,
-  `status` enum('booked','completed','cancelled','rescheduled') DEFAULT 'booked',
+  `status` enum('pending','booked','rescheduled','completed','cancelled') DEFAULT 'pending',
   `reason` text,
   `createdAT` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -74,7 +74,7 @@ CREATE TABLE `appointments` (
 
 LOCK TABLES `appointments` WRITE;
 /*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
-INSERT INTO `appointments` VALUES (1,1,1,'2026-02-12','10:00:00','booked','General checkup','2026-01-05 21:00:37','2026-02-07 19:09:32'),(2,1,1,'2026-03-05','09:15:00','cancelled','Follow-up Visit','2026-01-11 17:51:44','2026-02-07 19:34:03'),(3,1,2,'2026-04-08','11:40:00','booked','Cardio checkup','2026-02-07 19:38:04','2026-02-07 19:38:04');
+INSERT INTO `appointments` VALUES (1,1,1,'2026-03-10','22:35:00','pending','General checkup','2026-01-05 21:00:37','2026-03-10 19:32:04'),(2,1,1,'2026-04-15','06:00:00','rescheduled','Follow-up Visit','2026-01-11 17:51:44','2026-03-21 14:03:27'),(3,1,2,'2026-04-08','11:40:00','pending','Cardio checkup','2026-02-07 19:38:04','2026-02-07 19:38:04');
 /*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,6 +100,7 @@ CREATE TABLE `doctors` (
   `available_day` enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
+  `last_visit` datetime DEFAULT NULL,
   `createdAT` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`doctor_id`),
   UNIQUE KEY `email` (`email`),
@@ -114,7 +115,7 @@ CREATE TABLE `doctors` (
 
 LOCK TABLES `doctors` WRITE;
 /*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
-INSERT INTO `doctors` VALUES (1,1,'Steve','Benedict','Surgeon','steveBenedict@yahoo.uk','$2b$10$S5TZa8oHQ.TBc9Eiq87cfem/bf.40gwZK30lbADBANSaTgKq8zGmi','08056972415',8,NULL,NULL,NULL,NULL,NULL,'2025-12-22 01:32:05'),(2,1,'Liza','Anderson','Cardiology','lizaAnderson@yahoo.com','$2b$10$LdKlOQG5DDFcsandjYgmPeN4UURS25LRQbY1gY9MN2Wngt6BaMote','08056789524',4,NULL,NULL,NULL,NULL,NULL,'2026-01-12 23:10:03');
+INSERT INTO `doctors` VALUES (1,1,'Steve','Benedict','Surgeon','steveBenedict@yahoo.uk','$2b$10$S5TZa8oHQ.TBc9Eiq87cfem/bf.40gwZK30lbADBANSaTgKq8zGmi','08056972415',8,NULL,NULL,NULL,NULL,NULL,'2026-03-27 21:07:11','2025-12-22 01:32:05'),(2,1,'Liza','Anderson','Cardiology','lizaAnderson@yahoo.com','$2b$10$LdKlOQG5DDFcsandjYgmPeN4UURS25LRQbY1gY9MN2Wngt6BaMote','08056789524',4,NULL,NULL,NULL,NULL,NULL,NULL,'2026-01-12 23:10:03');
 /*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -157,22 +158,15 @@ DROP TABLE IF EXISTS `notifications`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `notifications` (
   `notification_id` int NOT NULL AUTO_INCREMENT,
-  `patient_id` int DEFAULT NULL,
+  `user_id` int NOT NULL,
+  `user_role` enum('patient','doctor','admin') NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `message` text,
-  `type` enum('success','error','info') DEFAULT 'info',
   `is_read` tinyint(1) DEFAULT '0',
-  `createdAT` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `doctor_id` int DEFAULT NULL,
-  `admin_id` int DEFAULT NULL,
-  PRIMARY KEY (`notification_id`),
-  KEY `admin_id` (`admin_id`),
-  KEY `doctor_id` (`doctor_id`),
-  KEY `notifications_ibfk_1` (`patient_id`),
-  CONSTRAINT `admin_id` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`admin_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `doctor_id` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `type` enum('success','error','info') DEFAULT 'info',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`notification_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,7 +175,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
-INSERT INTO `notifications` VALUES (4,1,'Appointment Rescheduled Successfully','Your appointment with Dr. Steve Benedict has been rescheduled to 2026-03-05 at 09:15','info',0,'2026-02-07 19:06:31',NULL,NULL),(5,1,'Appointment Cancelled Successfully','Your appointment scheduled with Dr. Steve Benedict on 2026-03-05 at 09:15 has been cancelled successfully','info',0,'2026-02-07 19:34:03',NULL,NULL),(6,1,'Password Changed Successfully','Your account password has been changed successfully. If you did not make this change, please contact support immediately!','info',1,'2026-02-07 19:41:56',NULL,NULL),(7,1,'Profile Updated Successfully','Your profile details have been updated successfully','info',0,'2026-02-07 19:43:51',NULL,NULL);
+INSERT INTO `notifications` VALUES (2,1,'patient','Profile Updated Successfully','Your profile details have been updated successfully',0,'info','2026-03-20 20:32:36'),(4,1,'patient','Profile Picture Updated Successfully','Your profile picture has been updated successfully',0,'error','2026-03-20 20:36:50'),(5,1,'patient','Profile Updated Successfully','Your profile details have been updated successfully',1,'info','2026-03-20 20:37:22'),(6,1,'patient','Appointment Rescheduled Successfully','Your appointment with Dr. Steve Benedict has been rescheduled to 2026-04-15 at 06:00',0,'info','2026-03-21 14:03:27');
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,7 +212,7 @@ CREATE TABLE `patients` (
 
 LOCK TABLES `patients` WRITE;
 /*!40000 ALTER TABLE `patients` DISABLE KEYS */;
-INSERT INTO `patients` VALUES (1,'Faith','Dobby','johnSmith@mail.co','$2b$10$KTJy2f9/8AxeFxvF0JFoRek9xTixhO6ogENI8bwJYaFiE6iesZoKW','09045862135','1999-03-18','male','1768773163249-169303375.png','Manhattan, United States of America','2025-12-20 23:17:11','2026-02-14 23:32:28','2026-02-15 00:32:28','08068712354'),(2,'Sarah','Johnson','sarahJohnson@yahoo.co','$2b$10$dSCiBvwWT829gbPU0njdRubLdmOhlqz.9hvLt1qrLXkvegjb0XYu6','09058153874','1990-10-23','female',NULL,NULL,'2025-12-20 23:23:21','2026-02-14 21:56:09','2026-02-14 22:56:09',NULL);
+INSERT INTO `patients` VALUES (1,'Faith','Dobby','johnSmith@mail.co','$2b$10$KTJy2f9/8AxeFxvF0JFoRek9xTixhO6ogENI8bwJYaFiE6iesZoKW','09045862135','1981-02-19','male','1774039010514-410168023.jpg','Manhattan, United States of America','2025-12-20 23:17:11','2026-03-27 20:02:13','2026-03-27 21:02:13','08068712354'),(2,'Sarah','Johnson','sarahJohnson@yahoo.co','$2b$10$dSCiBvwWT829gbPU0njdRubLdmOhlqz.9hvLt1qrLXkvegjb0XYu6','09058153874','1990-10-23','female',NULL,NULL,'2025-12-20 23:23:21','2026-02-14 21:56:09','2026-02-14 22:56:09',NULL);
 /*!40000 ALTER TABLE `patients` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -278,6 +272,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+INSERT INTO `sessions` VALUES ('CbWv4vc-Qqa5crtNrwDnNK5jPNjaBGVv',1774728134,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2026-03-28T19:51:19.830Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"user\":{\"id\":1,\"role\":\"patient\"}}'),('FciD4KTX7SOCE6vJeCSWShf7hGrR0VbQ',1774723226,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2026-03-27T19:15:28.219Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"user\":{\"id\":1,\"role\":\"doctor\"}}'),('iAeW2MXnF97Yl8SCdUrccOLwU3119H4q',1774728432,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2026-03-28T19:41:54.296Z\",\"secure\":false,\"httpOnly\":true,\"path\":\"/\",\"sameSite\":\"lax\"},\"user\":{\"id\":1,\"role\":\"doctor\"}}');
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -290,4 +285,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-17 19:44:41
+-- Dump completed on 2026-05-14 22:07:01

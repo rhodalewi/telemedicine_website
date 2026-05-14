@@ -3,8 +3,8 @@ const router = express.Router();
 const { body } = require('express-validator');
 const createUpload = require('../config/multerUploads');
 const uploadPicture = createUpload('doctor')
-const { doctorSessionAuth, isDoctor } = require('../Middleware/authMiddleware');
-const { registerDoctor, loginDoctor, getAllDoctors, findDoctors, uploadProfilePicture } = require('../Controllers/doctorController');
+const { isAuthenticated, authorizeRoles } = require('../Middleware/authMiddleware');
+const { registerDoctor, loginDoctor, doctorDashboard, doctorAllAppointments, getAllDoctors, findDoctors, uploadDoctorImage, doctorTodaySchedule } = require('../Controllers/doctorController');
 
 //REGISTRATION ROUTE
 router.post('/register', [
@@ -19,6 +19,12 @@ router.post('/login', [
     body('password_hash').isEmpty().withMessage('Password is required')
 ], loginDoctor);
 
+//DASHBOARD ROUTE
+router.get('/dashboard', isAuthenticated, authorizeRoles('doctor'), doctorDashboard);
+
+//GET ALL APOINTMENTS FOR DOCTOR
+router.get('/doctorAllAppointments', isAuthenticated, authorizeRoles('doctor'), doctorAllAppointments)
+
 // GET ALL DOCTORS
 router.get('/getAlldoctors', getAllDoctors);
 
@@ -26,6 +32,12 @@ router.get('/getAlldoctors', getAllDoctors);
 router.get('/findDoctors', findDoctors)
 
 //UPLOAD PROFILE PICTURE
-router.put('/profile/image', doctorSessionAuth, isDoctor, uploadPicture.single('profile_picture'), uploadProfilePicture);
+router.put('/profile/image', isAuthenticated, authorizeRoles('doctor'), uploadPicture.single('profile_picture'), uploadDoctorImage);
+
+//GET APPOINTMENT FOR A DOCTOR TODAY'S SCHEDULE
+router.get('/doctorTodaySchedule/', isAuthenticated, doctorTodaySchedule);
+
+//ALL APPOINTMENT
+/* router.get('allDoctorAppointment') */
 
 module.exports = router;

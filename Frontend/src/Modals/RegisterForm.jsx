@@ -1,17 +1,15 @@
 import { useForm } from 'react-hook-form';
 import { useContext } from 'react';
-import { useNavigate } from "react-router-dom"; 
 import api from '../Services/api';
-import { AuthPatientContext } from "../Context/createContext";
+import { AuthContext } from "../Context/createContext";
 import { LuEye, LuEyeClosed, LuCircleX } from "react-icons/lu";
 import UserRole from '../Components/UserRole';
 
 
 const RegisterForm = ({ setFormType, setOpenAuth}) => {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
-  const { selectedRole, registerEndpoint, showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword } = useContext(AuthPatientContext);
+  const { selectedRole, registerEndpoint, showSuccess, showError, fetchPatientData, isSubmitting, setIsSubmitting, showPassword, setShowPassword, showConfirmPassword, setShowConfirmPassword, navigate } = useContext(AuthContext);
 
-  const navigate = useNavigate();
   const matchPassword = watch('password_hash');
 
   async function onSubmit(data) {
@@ -31,7 +29,7 @@ const RegisterForm = ({ setFormType, setOpenAuth}) => {
         setIsSubmitting(false);
 
         setTimeout(() => {
-          navigate('/user');
+          navigate(`/${selectedRole}/dashboard`);
         }, 1500);
       }, 2000)
 

@@ -1,11 +1,11 @@
 import {useContext, useState} from 'react'
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import { LuPencil } from 'react-icons/lu';
 import EditProfileForm from '../../Modals/EditProfileForm';
 import ChangePasswordForm from '../../Modals/ChangePasswordForm';
 
 const ProfileForm = () => {
-    const { dashboardOverview } = useContext(AuthPatientContext);
+    const { dashboardOverview } = useContext(AuthContext);
     const [openEditForm, setOpenEditForm] = useState(false); 
     const [openChangePassword, setOpenChangePassword] = useState(false);
 

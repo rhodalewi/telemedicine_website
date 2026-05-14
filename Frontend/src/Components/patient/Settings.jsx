@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from 'react'
 import { LuMoon, LuSun, LuTrash2, LuUser } from 'react-icons/lu';
-import { AuthPatientContext } from '../../Context/createContext';
+import { AuthContext } from '../../Context/createContext';
 import api from '../../Services/api';
 
 const Settings = () => {
-  const { dashboardOverview, showSuccess, showError, navigate,collapse } = useContext(AuthPatientContext);
+  const { dashboardOverview, showSuccess, showError, navigate,collapse } = useContext(AuthContext);
   const [toggleTheme, setToggleTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     return savedTheme ? savedTheme === 'light' : true;

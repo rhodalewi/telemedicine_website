@@ -23,12 +23,13 @@ app.get('/api', (req, res) => {
 });
 
 //ROUTES
-app.use('/api/user', require('./Routes/patientRoutes'));
+app.use('/api/patient', require('./Routes/patientRoutes'));
 app.use('/api/doctor', require('./Routes/doctorRoutes'));
 app.use('/api/appointment', require('./Routes/appointmentRoute'));
 app.use('/api/admin', require('./Routes/adminRoutes'));
 app.use('/api/hospital', require('./Routes/hospitalRoutes'));
 app.use('/api/notification', require('./Routes/notificationRoutes'));
+app.use('/api/user', require('./Routes/patientRoutes'));
 
 //STATIC FOLDER FOR UPLOADED FILES
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

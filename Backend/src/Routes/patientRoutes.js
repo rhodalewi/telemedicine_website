@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator'); 
-const { patientSessionAuth, isPatient } = require('../Middleware/authMiddleware')
+const { isAuthenticated, authorizeRoles } = require('../Middleware/authMiddleware')
 const createUpload = require('../config/multerUploads');
 const uploadPicture = createUpload('patient');
 const { registerPatient, loginPatient,  patientDashboard, editProfileDetails, updateProfileDetails, changePassword, resetPassword, uploadPatientImage, logout, deleteAccount} = require('../Controllers/patientController');
@@ -20,27 +20,27 @@ router.post('/login', [
 ], loginPatient);
 
 //DASHBOARD ROUTE
-router.get('/dashboard', patientSessionAuth, isPatient, patientDashboard);
+router.get('/dashboard', isAuthenticated, authorizeRoles('patient'), patientDashboard);
 
 //GET PROFILE FOR UPDATE FORM ROUTE
-router.get('/updateProfile', patientSessionAuth, isPatient, editProfileDetails);
+router.get('/updateProfile', isAuthenticated, authorizeRoles('patient'), editProfileDetails);
 
 //UPDATE PROFILR DETAILS ROUTE
-router.put('/updateProfile', patientSessionAuth, isPatient, updateProfileDetails);
+router.put('/updateProfile', isAuthenticated, authorizeRoles('patient'), updateProfileDetails);
 
 //CHANGE PASSWORD ROUTE
-router.put('/changePassword', patientSessionAuth, isPatient, changePassword);
+router.put('/changePassword', isAuthenticated, authorizeRoles('patient'), changePassword);
 
 //RESET PASSWORD ROUTE
 router.put('/resetPassword', resetPassword);
 
 //UPLOAD PROFILE PICTURE ROUTE
-router.put('/profile/image', patientSessionAuth, isPatient, uploadPicture.single('profile_picture'), uploadPatientImage);
+router.put('/profile/image', isAuthenticated, authorizeRoles('patient'), uploadPicture.single('profile_picture'), uploadPatientImage);
 
 //LOGOUT ROUTE
 router.get('/logout', logout);
 
 //DELETE ACCOUNT ROUTE
-router.delete('/delete-account', patientSessionAuth, isPatient, deleteAccount);
+router.delete('/delete-account', isAuthenticated, authorizeRoles('patient'), deleteAccount);
 
 module.exports = router;
