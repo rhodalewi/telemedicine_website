@@ -96,7 +96,7 @@ exports.patientDashboard = async (req, res) => {
         const [patient] = await db.execute('SELECT * FROM patients WHERE patient_id = ?', [patientId])
         const [upcomingAppointmentData] = await db.execute(`SELECT COUNT(*) AS count FROM appointments WHERE patient_id = ? AND status IN ('booked', 'rescheduled') AND appointment_date >= CURDATE()`, [patientId]);
         const [totalAppointmentData] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE patient_id = ?', [patientId]);
-        const [doctorsConsulted] = await db.execute(`SELECT COUNT(doctor_id) AS doctors_consulted FROM appointments WHERE patient_id = ? AND status = 'completed'` [patientId]);
+        const [doctorsConsulted] = await db.execute(`SELECT COUNT(doctor_id) AS doctors_consulted FROM appointments WHERE patient_id = ? AND status = 'completed'`, [patientId]);
         const [appointmentHistory] = await db.execute(
             `SELECT 
                 a.appointment_id,
