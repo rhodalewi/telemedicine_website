@@ -81,7 +81,6 @@ const NotificationPanel = ({ onClose }) => {
                                         >
                                             <h1 className='font-semibold font-heading text-small'>{notification.title}</h1>
                                             <p className='text-text-secondary text-caption md:text-small'> {notification.message} at {new Date(notification.created_at).toLocaleString()}  </p>
-                                            <p> {notification.type} </p>
                                         </div>
                                         <button
                                             onClick={() => handleDelete(notification.notification_id)}

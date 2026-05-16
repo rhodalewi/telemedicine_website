@@ -79,12 +79,12 @@ exports.doctorDashboard = async (req, res) => {
         const [doctorData] = await db.execute('SELECT * FROM doctors WHERE doctor_id = ?', [doctorId]);
 
         //Today's appointment
-        const [todayAppointment] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ? AND appointment_date = CURDATE() AND status IN ("booked", "rescheduled")', [doctorId]);
+        const [todayAppointment] = await db.execute(`SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ? AND appointment_date = CURDATE() AND status IN ('booked', 'rescheduled')`, [doctorId]);
 
         //upcoming appointment
-        const [upcomingAppointment] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ? AND status IN ("booked", "rescheduled") AND appointment_date >= CURDATE()', [doctorId]);
+        const [upcomingAppointment] = await db.execute(`SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ? AND status IN ('booked', 'rescheduled') AND appointment_date >= CURDATE()`, [doctorId]);
         //total patients
-        const [totalPatients] = await db.execute('SELECT COUNT(DISTINCT patient_id) AS count FROM appointments WHERE doctor_id = ? AND status = "completed"', [doctorId]);
+        const [totalPatients] = await db.execute(`SELECT COUNT(DISTINCT patient_id) AS count FROM appointments WHERE doctor_id = ? AND status = 'completed'`, [doctorId]);
 
         //total appointments
         const [totalAppointments] = await db.execute('SELECT COUNT(*) AS count FROM appointments WHERE doctor_id = ?', [doctorId]);
