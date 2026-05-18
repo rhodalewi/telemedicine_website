@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
     if (selectedRole === 'doctor') dashboardEndpoint = '/doctor/dashboard';
 
     //IMAGE URL FOR PATENTS
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     const PatientImageUrl = (imageName) => {
         if (!imageName) return null;
