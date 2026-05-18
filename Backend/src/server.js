@@ -32,7 +32,7 @@ app.use('/api/notification', require('./Routes/notificationRoutes'));
 app.use('/api/user', require('./Routes/patientRoutes'));
 
 //STATIC FOLDER FOR UPLOADED FILES
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 //START THE SERVER
 const PORT = process.env.PORT || 8080;

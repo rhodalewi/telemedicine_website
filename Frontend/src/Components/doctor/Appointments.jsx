@@ -77,7 +77,8 @@ const Appointments = () => {
                             <div className="h-10 w-10 md:h-12 md:w-12 rounded-full">
                                 {appointments.patientpicture && appointments.patientpicture.length > 0 ? (
                                 <img
-                                    src={`${PatientImageUrl}${appointments.patientpicture}`}
+                                    src={PatientImageUrl(appointments.patientpicture)}
+                                   /*  src={`${PatientImageUrl}${appointments.patientpicture}`} */
                                     alt={`${appointments.patient_firstname + ' ' + appointments.patient_lastname}`}
                                     className='w-full h-auto object-cover rounded-full border border-gray-400 bg-gray-200'
                                 />
@@ -124,7 +125,7 @@ const Appointments = () => {
                                         <div className="h-10 w-10 md:h-12 md:w-12 rounded-full">
                                             {appointments.patientPicture && appointments.patientPicture.length > 0 ? (
                                             <img
-                                                src={`${PatientImageUrl}${appointments.patientPicture}`}
+                                                src={PatientImageUrl(appointments.patientPicture)}
                                                 alt={`${appointments.first_name + ' ' + appointments.last_name}`}
                                                 className='w-full h-auto object-cover rounded-full border border-gray-400 bg-gray-200'
                                             />

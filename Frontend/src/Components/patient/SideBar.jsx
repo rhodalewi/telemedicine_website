@@ -68,12 +68,12 @@ const SideBar = () => {
             {/*SIDEBAR FOOTER */}
             <div className='border-t border-gray-200 px-4 py-8 space-y-8 relative'>
                 <div className={`flex items-center gap-3 ${collapse ? 'md:flex-row' : 'md:flex-col'}`}>
-                    {/* doctors profile picture */}
+                    {/* patient profile picture */}
                     <div className='h-12 w-12 rounded-full flex items-center justify-center bg-accent/10 overflow-hidden'>
-                        {dashboardOverview.patientData?.profile_picture && dashboardOverview.patientData?.profile_picture.length > 0 ? (
+                        {dashboardOverview.patientData?.profile_picture ? (
                             <img 
-                                  /*  src={`http://localhost:8080/uploads/patient/${dashboardOverview.patientData?.profile_picture}`} */
-                                src={`${PatientImageUrl}${dashboardOverview.patientData?.profile_picture}`}
+                                src={PatientImageUrl(dashboardOverview.patientData?.profile_picture)}
+                                /* src={`${PatientImageUrl}${dashboardOverview.patientData.profile_picture}`} */
                                 alt={dashboardOverview.patientData?.first_name + ' ' + dashboardOverview.patientData?.last_name} 
                                 className='w-full h-auto object-cover' />
                         ) : (

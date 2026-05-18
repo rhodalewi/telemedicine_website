@@ -50,7 +50,8 @@ const Profile = () => {
           <div className='border border-gray-300 relative h-24 w-24 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden'>
             {dashboardOverview.patientData?.profile_picture && dashboardOverview.patientData?.profile_picture.length > 0 ? (
               <img
-                src={preview || `${PatientImageUrl}${dashboardOverview.patientData.profile_picture}`}
+                /* src={preview || `${PatientImageUrl}${dashboardOverview.patientData.profile_picture}`} */
+                src={preview || PatientImageUrl(dashboardOverview.patientData?.profile_picture)}
                 alt={`${dashboardOverview.patientData.first_name + ' ' + dashboardOverview.patientData.last_name}`}
                 className='w-full h-auto object-contain' />
             ) : (

@@ -69,7 +69,8 @@ const Sidebar = () => {
                     <div className='h-12 w-12 rounded-full flex items-center justify-center bg-accent/10 overflow-hidden'>
                         {doctorDashboardOverview.doctorData?.profile_picture && doctorDashboardOverview.doctorData?.profile_picture.length > 0 ? (
                             <img 
-                                src={`${DoctorImageUrl}${doctorDashboardOverview.doctorData.profile_picture}`}
+                                src={DoctorImageUrl(doctorDashboardOverview.doctorData?.profile_picture)}
+                                /* src={`${DoctorImageUrl}${doctorDashboardOverview.doctorData.profile_picture}`} */
                                 alt={`${doctorDashboardOverview.doctorData?.first_name + ' ' + doctorDashboardOverview.doctorData?.last_name}`} 
                                 className='w-full h-auto object-cover rounded-full border border-gray-400 bg-gray-200' />
                         ) : (

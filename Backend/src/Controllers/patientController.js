@@ -273,7 +273,7 @@ exports.uploadPatientImage = async (req, res) => {
     try {
         //remove old image
         const [oldImages] = await db.execute(`SELECT profile_picture FROM patients WHERE patient_id = ?`, [patientId]);
-        const oldImage = oldImages[0].profile_picture;
+        const oldImage = oldImages?.[0]?.profile_picture;
         if (oldImage) {
             const oldImaagePath = path.join(__dirname, '../uploads/patient', oldImage);
             
@@ -294,7 +294,7 @@ exports.uploadPatientImage = async (req, res) => {
             type: 'success'
         });
 
-        return res.status(200).json({ message: 'Image uploaded successfully', Image: profilePicturePath });
+        return res.status(200).json({ message: 'Image uploaded successfully', profile_picture: profilePicturePath });
     } catch (error) {
         console.log(error)
 

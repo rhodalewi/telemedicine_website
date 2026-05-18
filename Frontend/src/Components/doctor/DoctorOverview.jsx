@@ -102,7 +102,8 @@ const DoctorOverview = () => {
                         <div className="h-10 w-10 md:h-12 md:w-12 rounded-full">
                           {appointments.patientpicture && appointments.patientpicture.length > 0 ? (
                             <img
-                              src={`${PatientImageUrl}${appointments.patientpicture}`}
+                              src={PatientImageUrl(appointments.patientpicture)}
+                              /* src={`${PatientImageUrl}${appointments.patientpicture}`} */
                               alt={`${appointments.patient_firstname + ' ' + appointments.patient_lastname}`}
                               className='w-full h-auto object-cover rounded-full border border-gray-400 bg-gray-200'
                             />

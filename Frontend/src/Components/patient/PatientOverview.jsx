@@ -67,7 +67,8 @@ const PatientOverview = () => {
                                     <div className='h-10 w-10 md:h-12 md:w-12 rounded-full'>
                                         {item.doctorspicture && item.doctorspicture.length > 0 ? (
                                             <img
-                                                src={`${DoctorImageUrl}${item.doctorspicture}`}
+                                                src={DoctorImageUrl(item.doctorspicture)}
+                                                /* src={`${DoctorImageUrl}${item.doctorspicture}`} */
                                                 alt={`${item.first_name = ' ' + item.last_name}`}
                                                 className='w-full h-auto object-cover rounded-full' />
                                         ) : (

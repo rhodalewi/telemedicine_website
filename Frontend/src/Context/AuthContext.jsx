@@ -90,10 +90,20 @@ export const AuthProvider = ({ children }) => {
     if (selectedRole === 'doctor') dashboardEndpoint = '/doctor/dashboard';
 
     //IMAGE URL FOR PATENTS
-    const PatientImageUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/uploads/patient/` : 'http://localhost:8080/uploads/patient/';
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
-    //IMAGE URL FOR DOCTORS
-    const DoctorImageUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/uploads/doctor/` : 'http://localhost:8080/uploads/doctor/';
+    const PatientImageUrl = (imageName) => {
+        if (!imageName) return null;
+
+        return `${BACKEND_URL}/uploads/patient/${imageName}`;
+    };
+   
+    //IMAGE URL FOR PATENTS
+    const DoctorImageUrl = (imageName) => {
+        if (!imageName) return null;
+
+        return `${BACKEND_URL}/uploads/doctor/${imageName}`;
+    };
 
       //DASHBOARD OVERVIEW ENDPOINT
     const fetchPatientData = async () => {
